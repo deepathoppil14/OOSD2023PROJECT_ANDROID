@@ -5,16 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -23,9 +17,6 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etUsername;
-    private EditText etPassword;
-
     RequestQueue requestQueue;
 
     @Override
@@ -33,10 +24,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etUsername = findViewById(R.id.etUsername);
-        etPassword = findViewById(R.id.etPassword);
+        LoginFragment fragment =
+                (LoginFragment) getSupportFragmentManager().findFragmentById(R.id.loginFragment);
 
         requestQueue = Volley.newRequestQueue(this);
+
+        findViewById(R.id.btnRegister).setOnClickListener(view -> {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            startActivity(intent);
+        });
 
         // on "Login" button click
         findViewById(R.id.btnLogin).setOnClickListener(view -> {
@@ -45,8 +41,11 @@ public class LoginActivity extends AppCompatActivity {
             //     "custUsername": "...",
             //     "custPassword": "...",
             // }
-            String username = etUsername.getText().toString();
-            String password = etPassword.getText().toString();
+            String username = fragment.getCustUsername();
+            String password = fragment.getCustPassword();
+
+            Log.d("travelexperts", "custUsername: " + username);
+            Log.d("travelexperts", "custPassword: " + password);
 
             JSONObject loginBody = new JSONObject();
 
@@ -67,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             // Create a JSON request (sends/recieves JSON)
             JsonObjectRequest request = new JsonObjectRequest(
                     StringRequest.Method.POST,
-                    "http://10.187.238.58:8080/workshop-7-1.0-SNAPSHOT/api/auth/login",
+                    "http://10.187.195.112:8080/workshop-7-1.0-SNAPSHOT/api/auth/login",
                     loginBody,
                     response -> {
                         // request success
@@ -78,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
 //                            Intent intent = new Intent(this, CustomerPageActivity.class);
 //                            intent.putExtra("token", token);
 
+                            Log.d("travelexperts", "token: " + response.getString("token"));
                             Toast.makeText(
                                     this,
                                     "Token: " + response.getString("token"),
@@ -99,6 +99,8 @@ public class LoginActivity extends AppCompatActivity {
                                 "Error Making Request",
                                 Toast.LENGTH_SHORT)
                                 .show();
+
+                        Log.d("travelexperts", "request timed out");
                     });
 
             // queue the request to be sent
