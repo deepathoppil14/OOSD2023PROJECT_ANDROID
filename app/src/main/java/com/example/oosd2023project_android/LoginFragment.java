@@ -1,18 +1,13 @@
 package com.example.oosd2023project_android;
 
-import android.content.Context;
 import android.os.Bundle;
 
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class LoginFragment extends CustomerFragment {
+public class LoginFragment extends RegistrationFragment {
 
     private EditText etCustUsername;
     private EditText etCustPassword;

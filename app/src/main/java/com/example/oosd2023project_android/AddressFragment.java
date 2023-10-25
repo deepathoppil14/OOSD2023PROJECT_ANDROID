@@ -4,16 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
-import androidx.annotation.Nullable;
-
-public class AddressFragment extends CustomerFragment {
+public class AddressFragment extends RegistrationFragment {
 
     private EditText etCustAddress;
     private EditText etCustCity;

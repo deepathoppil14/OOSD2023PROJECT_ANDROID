@@ -1,43 +1,41 @@
 package com.example.oosd2023project_android;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
+/*
+ * This activity is responsible for guiding the user through registering a new customer
+ * account.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
+    // Customer object that will be incrementally filled with data as user goes through the registration
+    // process
     private Customer customer;
 
-    private List<CustomerFragment> fragments;
+    // A list of "CustomerFragment" fragments for registration details
+    private List<RegistrationFragment> fragments;
+    // The index of the current fragment within the fragments list
     int pageIndex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         // first fragment is required by the layout editor, so don't add it twice
-        fragments.add((CustomerFragment) manager.findFragmentById(R.id.detailsFragment));
+        fragments.add((RegistrationFragment) manager.findFragmentById(R.id.detailsFragment));
         fragments.add(new AddressFragment());
         fragments.add(new ContactFragment());
         fragments.add(new LoginFragment());
@@ -68,13 +66,13 @@ public class RegisterActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(view -> {
             // Get the current fragment, and have it update the customer data with
             // whatever has been entered
-            CustomerFragment currentFragment = fragments.get(pageIndex);
+            RegistrationFragment currentFragment = fragments.get(pageIndex);
             currentFragment.intoCustomer(customer);
 
             // if there are more fragments following the current one
             if (pageIndex + 1 < fragments.size()) {
                 // ... then get the next fragment
-                CustomerFragment nextFragment  = fragments.get(pageIndex + 1);
+                RegistrationFragment nextFragment  = fragments.get(pageIndex + 1);
 
                 // replace the current fragment with the next
                 manager.beginTransaction()
@@ -112,11 +110,11 @@ public class RegisterActivity extends AppCompatActivity {
         // The Cancel / Prev Button
         btnCancel.setOnClickListener(view -> {
             // Get the current fragment and have it store its data in the customer object
-            CustomerFragment currentFragment = fragments.get(pageIndex);
+            RegistrationFragment currentFragment = fragments.get(pageIndex);
             currentFragment.intoCustomer(customer);
             // operates exactly like the above button, but in reverse
             if (pageIndex - 1 >= 0) {
-                CustomerFragment previousFragment = fragments.get(pageIndex - 1);
+                RegistrationFragment previousFragment = fragments.get(pageIndex - 1);
 
                 manager.beginTransaction()
                         .replace(R.id.detailsFragment, previousFragment)
@@ -142,6 +140,8 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
             else {
+                // we're on the very first fragment and the user clicked the back button, so
+                // return to the login screen
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
             }
@@ -163,12 +163,19 @@ public class RegisterActivity extends AppCompatActivity {
 //                "}");
     }
 
+    /*
+     * This method is responsible for attempting to register the user with the rest service
+     * api.
+     *
+     * If unsuccessful, it will display a message to the user explaining the error with the
+     * registration
+     */
     private void submitCustomer() {
         // Attempt to register a new customer with the REST service
         JSONObject jsonObject = new JSONObject();
 
         try {
-            // is auto_increment, but Gson will not deserialize if incomplete
+            // id is auto_increment, but Gson will not deserialize if incomplete
             jsonObject.put("customerId", null);
             jsonObject.put("custFirstName", customer.getCustFirstName());
             jsonObject.put("custLastName", customer.getCustLastName());
@@ -186,16 +193,19 @@ public class RegisterActivity extends AppCompatActivity {
             jsonObject.put("custPassword", customer.getCustPassword());
         }
         catch (JSONException ex) {
+            Toast.makeText(this, "Error Processing Registration Information", Toast.LENGTH_LONG).show();
             Log.e("travelexperts", "JSON Error: " + ex.getMessage());
             return;
         }
 
+        // Create a volley request queue and jsonobject request to register the customer
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
                 getString(R.string.hostname) + "/api/customers/register",
-                jsonObject,
+                jsonObject, // (the json object containing customer details)
                 response -> {
+                    // on success ...
                     Log.d("travelexperts", "Registration Successful");
                     Toast.makeText(
                             this,
@@ -205,15 +215,13 @@ public class RegisterActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
-//                    new Handler()
-//                            .postDelayed(() -> {
-//                                startActivity(intent);
-//                            }, 5000);
                 },
                 error -> {
+                    // on failure ...
                     Log.e("travelexperts", "registration error");
                     NetworkResponse res = error.networkResponse;
-                    if (res == null) {
+                    // either no response from server, or the server had an internal error
+                    if (res == null || res.statusCode == 500) {
                         Toast.makeText(
                                 this,
                                 "Server Error!",
@@ -221,15 +229,20 @@ public class RegisterActivity extends AppCompatActivity {
                                 .show();
                         return;
                     }
+                    // request went through, but there was something wrong with it
                     if (res.statusCode == 400) {
-                        // BAD REQUEST --> there were validation errors most likely
+                        // convert the response body into a json object
                         String resDataString = new String(res.data, StandardCharsets.UTF_8);
                         JSONObject resJson;
 
                         try {
                             resJson = new JSONObject(resDataString);
+                            // error_type: validation, username conflict, etc...
+                            String errorType = resJson.getString("error_type");
 
-                            if (resJson.getString("error_type").equals("validation_errors")) {
+                            if (errorType.equals("validation_errors")) {
+                                // There was a validation error, show the user only the first error
+                                // as a toast
                                 String validationErrorString = resJson.getString("validation_errors");
                                 JSONArray validationErrors = new JSONArray(validationErrorString);
                                 String firstError = validationErrors.getString(0);
@@ -249,8 +262,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 if (errorField != null)
                                     Toast.makeText(this, "Invalid " + errorField, Toast.LENGTH_LONG).show();
-                                else
+                                else // error name unrecognized (an error of the error really)
                                     Toast.makeText(this, "Unknown Error", Toast.LENGTH_LONG).show();
+                            }
+                            else if (errorType.equals("username_taken")) {
+                                // username conflict
+                                Toast.makeText(this, "Username is Already Taken", Toast.LENGTH_LONG).show();
                             }
                         }
                         catch (JSONException e) {
@@ -259,6 +276,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+        // send the request
         requestQueue.add(request);
     }
 }

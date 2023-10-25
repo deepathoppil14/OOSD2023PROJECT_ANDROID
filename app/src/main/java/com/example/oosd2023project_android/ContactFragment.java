@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-public class ContactFragment extends CustomerFragment {
+public class ContactFragment extends RegistrationFragment {
 
     private EditText etCustHomePhone;
     private EditText etCustBusPhone;

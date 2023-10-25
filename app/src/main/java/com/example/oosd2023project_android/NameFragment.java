@@ -7,9 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import androidx.annotation.Nullable;
-
-public class NameFragment extends CustomerFragment {
+/*
+ * This is a fragment of the registration process, responsible for
+ * collecting the user's first and last name
+ */
+public class NameFragment extends RegistrationFragment {
 
     private EditText etCustFirstName;
     private EditText etCustLastName;
