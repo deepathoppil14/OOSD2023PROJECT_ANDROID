@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 //                           pass the token to the next activity so they can make API
 //                          requests...
                             String token = response.getString("token");
-                            Intent intent = new Intent(this, CustomerPageActivity.class);
+                            Intent intent = new Intent(this, TestActivity.class);
                             intent.putExtra("token", token);
                             startActivity(intent);
                             Log.d("travelexperts", "token: " + response.getString("token"));
