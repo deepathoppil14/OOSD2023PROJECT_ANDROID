@@ -73,16 +73,16 @@ public class LoginActivity extends AppCompatActivity {
                         try {
 //                           pass the token to the next activity so they can make API
 //                          requests...
-//                            String token = response.getString("token");
-//                            Intent intent = new Intent(this, CustomerPageActivity.class);
-//                            intent.putExtra("token", token);
-
+                            String token = response.getString("token");
+                            Intent intent = new Intent(this, CustomerPageActivity.class);
+                            intent.putExtra("token", token);
+                            startActivity(intent);
                             Log.d("travelexperts", "token: " + response.getString("token"));
-                            Toast.makeText(
+                            /*Toast.makeText(
                                     this,
                                     "Token: " + response.getString("token"),
                                     Toast.LENGTH_LONG)
-                                    .show();
+                                    .show();*/
                         }
                         catch (JSONException e) {
                             Toast.makeText(
