@@ -174,7 +174,7 @@ public class RegisterActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                "http://10.187.195.112:8080/workshop-7-1.0-SNAPSHOT/api/customers/register",
+                R.string.hostname + "/api/customers/register",
                 jsonObject,
                 response -> {
                     Log.d("travelexperts", "SUCCESS");

@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             // Create a JSON request (sends/recieves JSON)
             JsonObjectRequest request = new JsonObjectRequest(
                     StringRequest.Method.POST,
-                    "http://10.187.195.112:8080/workshop-7-1.0-SNAPSHOT/api/auth/login",
+                    R.string.hostname + "/api/auth/login",
                     loginBody,
                     response -> {
                         // request success
