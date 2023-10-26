@@ -154,6 +154,7 @@ public class CustomerPageActivity extends AppCompatActivity {
         else if (item.getItemId() == R.id.miPayment)
         {
             Intent creditIntent = new Intent(this, CreditCardActivity.class);
+            Log.d("travelexperts", "Putting token \"" + token + "\" in CreditCardActivity");
             creditIntent.putExtra("token", token);
             startActivity(creditIntent);
         } else

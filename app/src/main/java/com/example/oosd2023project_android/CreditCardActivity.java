@@ -22,6 +22,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +38,8 @@ public class CreditCardActivity extends AppCompatActivity {
 
     RequestQueue requestQueue;
 
+    String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +53,8 @@ public class CreditCardActivity extends AppCompatActivity {
         btnSaveCard = findViewById(R.id.btnSaveCard);
         requestQueue = Volley.newRequestQueue(this);
 
-
         Intent intent = getIntent();
-        String token = intent.getStringExtra("token");
+        token = intent.getStringExtra("token");
         //this fetches customer data through an API request
         AuthorizedJsonRequest request = new AuthorizedJsonRequest(
                 Request.Method.GET,
@@ -105,24 +107,32 @@ public class CreditCardActivity extends AppCompatActivity {
         // Set the adapter to your ListView
         lvCreditCards.setAdapter(adapter);
 
-        String url =getString(R.string.hostname)+"/api/creditcard/getcreditcards/"+CustId;
-        JsonArrayRequest creditCardRequest = new JsonArrayRequest(
-                Request.Method.GET, url, null,
+        String url =getString(R.string.hostname)+"/api/creditcard/getcreditcards";
+        AuthorizedJsonRequest creditCardRequest = new AuthorizedJsonRequest(
+                Request.Method.GET,
+                getIntent().getStringExtra("token"),
+                url,
+                null,
                 response -> {
                     try {
+                        String cardListString = response.getString("creditcards");
+                        JSONArray cardList = new JSONArray(cardListString);
+//                        JSONArray cardList = response.getJSONArray("creditcards");
+                        Log.d("travelexperts", "CARD LIST: " + cardList.toString());
+//
+                        for (int i = 0; i < cardList.length(); i++) {
+                            JSONObject cardJson = cardList.getJSONObject(i);
+                            CreditCards card = new CreditCards(
+                                    cardJson.getInt("creditCardId"),
+                                    cardJson.getString("ccName"),
+                                    cardJson.getString("ccNumber"),
+                                    cardJson.getString("ccExpiry"),
+                                    cardJson.getInt("customerId"));
 
-                        for (int i = 0; i < response.length(); i++) {
-                            JSONObject creditCardData = response.getJSONObject(i);
-
-
-                            CreditCards cardlist = new CreditCards(creditCardData.getInt("cCid"),creditCardData.getString("cCName"),
-                                    creditCardData.getString("cCNumber"),creditCardData.getString("cCExpiry"),
-                                    creditCardData.getInt("customerId")
-                                    );
-                            cardDetails.add(cardlist);
+                            cardDetails.add(card);
                         }
-                        adapter.notifyDataSetChanged(); // Notify the adapter of data changes
-                    } catch (JSONException e) {
+                        adapter.notifyDataSetChanged();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 },
@@ -133,13 +143,15 @@ public class CreditCardActivity extends AppCompatActivity {
                             "Error Making Request",
                             Toast.LENGTH_SHORT
                     ).show();
-                    Log.d("travelexperts", "request timed out");
+                    Log.e("travelexperts", error.toString());
+                    Log.e("travelexperts", "Error making request");
                 }
         );
         lvCreditCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent creditIntent = new Intent(getApplicationContext(), CreditcardDetailActivity.class);
+                creditIntent.putExtra("token", token);
                 creditIntent.putExtra("CustId", CustId);
                 creditIntent.putExtra("CreditCards", (Serializable) adapter.getItem(position));
                 creditIntent.putExtra("mode","edit");
@@ -151,15 +163,15 @@ public class CreditCardActivity extends AppCompatActivity {
 
     private void postCreditcard(CreditCards creditcard,String token) {
         // Define the URL for the POST request
-        String url = getString(R.string.hostname) + "/api/creditcard/postcreditcard1";
+        String url = getString(R.string.hostname) + "/api/creditcard/postcreditcard";
 
         // Create a JSON object to hold the credit card data
         JSONObject creditCardJson = new JSONObject();
         try {
-            creditCardJson.put("CCId", creditcard.getCreditCardId());
-            creditCardJson.put("CCName", creditcard.getcCName());
-            creditCardJson.put("CCNumber", creditcard.getcCNumber());
-            creditCardJson.put("CCExpiry", creditcard.getcExpiry());
+            creditCardJson.put("creditCardId", creditcard.getCreditCardId());
+            creditCardJson.put("ccName", creditcard.getcCName());
+            creditCardJson.put("ccNumber", creditcard.getcCNumber());
+            creditCardJson.put("ccExpiry", creditcard.getcExpiry());
             creditCardJson.put("customerId", creditcard.getCustomerId());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -185,7 +197,8 @@ public class CreditCardActivity extends AppCompatActivity {
                     }
                 },
                 error -> {
-                    Toast.makeText(getApplicationContext(), "Eror", Toast.LENGTH_LONG).show();
+                    Log.e("travelexperts", error.toString());
+                    Toast.makeText(getApplicationContext(), "Erorr", Toast.LENGTH_LONG).show();
                 });
 
         requestQueue.add(request);

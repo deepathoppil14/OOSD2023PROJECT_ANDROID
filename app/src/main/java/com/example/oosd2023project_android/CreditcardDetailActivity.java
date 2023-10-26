@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ public class CreditcardDetailActivity extends AppCompatActivity {
 
     CreditCards creditCards;
 
+    String token;
+
     String serverIPAddress;
 
     @Override
@@ -47,6 +50,8 @@ public class CreditcardDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_creditcard_detail);
 
         requestQueue = Volley.newRequestQueue(this);
+
+        token = getIntent().getStringExtra("token");
 
 
         btnDelete = findViewById(R.id.btnDelete);
@@ -85,13 +90,15 @@ public class CreditcardDetailActivity extends AppCompatActivity {
     private void DeleteCreditcard(int cCId) {
 
         // Make a network request to fetch package data
-        String url = getString(R.string.hostname)+"/api/creditcard/deletecredircard/"+cCId;
-        JsonArrayRequest pkgProductRequest = new JsonArrayRequest(
-                Request.Method.DELETE, url, null,
+        String url = getString(R.string.hostname)+"/api/creditcard/deletecreditcard/"+cCId;
+        AuthorizedJsonRequest pkgProductRequest = new AuthorizedJsonRequest(
+                Request.Method.DELETE,
+                token, url, null,
                 response -> {
                     System.out.println(response.toString());
 
                     Intent creditIntent = new Intent(this, CreditCardActivity.class);
+                    creditIntent.putExtra("token", token);
 
                     startActivity(creditIntent);
                 },
@@ -102,60 +109,10 @@ public class CreditcardDetailActivity extends AppCompatActivity {
                             "Error Making Request",
                             Toast.LENGTH_SHORT
                     ).show();
+                    Log.e("travelexperts", "Reponse: " + new String(error.networkResponse.data, StandardCharsets.UTF_8));
                     Log.d("travelexperts", "request timed out");
                 }
         );
         requestQueue.add(pkgProductRequest);
     }
-/*
-    private class PostCreditcard implements Runnable {
-
-        private Creditcard creditcard;
-        public PostCreditcard(Creditcard creditcard) {this.creditcard = creditcard;}
-
-        @Override
-        public void run() {
-            String url = "192.168.1.89:8080/workshop7-REST-CreditCard-1.0-SNAPSHOT/api/creditcard/postcreditcard";
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("CCId",creditcard.getCreditCardId()+"");
-                obj.put("CCName", creditcard.getcCName());
-                obj.put("CCNumber",creditcard.getcCName());
-                obj.put("CCExpiry",creditcard.getcCExpiry());
-                obj.put("customerId",creditcard.getCustomerId());
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, obj,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(final JSONObject response) {
-                            Log.d("alice", "response=" + response);
-                            VolleyLog.wtf(response.toString(), "utf-8");
-
-                            //display result message
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("alice", "error=" + error);
-                            VolleyLog.wtf(error.getMessage(), "utf-8");
-                        }
-                    });
-
-            requestQueue.add(jsonObjectRequest);
-        }
-    }*/
-
 }
