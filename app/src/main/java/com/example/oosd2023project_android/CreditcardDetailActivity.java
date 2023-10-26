@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -15,6 +17,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -23,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class CreditcardDetailActivity extends AppCompatActivity {
@@ -30,9 +35,10 @@ public class CreditcardDetailActivity extends AppCompatActivity {
     Button btnUpdate, btnDelete;
     EditText etCCid, etCCName, etCCNumber, etCCExpiry, etCustomerId;
     RequestQueue requestQueue;
-    ListViewCreditcard listViewCreditcard;
 
-    MainApplication mainApplication;
+
+    CreditCards creditCards;
+
     String serverIPAddress;
 
     @Override
@@ -42,7 +48,7 @@ public class CreditcardDetailActivity extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
-        btnUpdate = findViewById(R.id.btnUpdate);
+
         btnDelete = findViewById(R.id.btnDelete);
         etCCid = findViewById(R.id.etCCid);
         etCCName = findViewById(R.id.etCCName);
@@ -51,82 +57,57 @@ public class CreditcardDetailActivity extends AppCompatActivity {
         etCustomerId = findViewById(R.id.etCustomerId);
 
         Intent intent = getIntent();
-        listViewCreditcard = (ListViewCreditcard) intent.getSerializableExtra("listviewcreditcard");
+        String  mode = intent.getStringExtra("mode");
+        if(mode.equals("edit")){
+            creditCards = (CreditCards) intent.getSerializableExtra("CreditCards"); //serializable so typecast to Product
+            etCCid.setText(creditCards.getCreditCardId()+"");
+            etCCName.setText(creditCards.getcCName());
+            etCCNumber.setText(creditCards.getcCNumber());
+            etCCExpiry.setText(creditCards.getcExpiry());
+            etCustomerId.setText(creditCards.getCustomerId() + "");
 
-        Executors.newSingleThreadExecutor().execute(new GetCredictcard(listViewCreditcard.getCustomerId()));
-
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int ccId = Integer.parseInt(etCCid.getText().toString());
-                String ccName = etCCName.getText().toString();
-                String ccNumber = etCCNumber.getText().toString();
-                String ccExpiry = etCCExpiry.getText().toString();
-                int customerId = Integer.parseInt(etCustomerId.getText().toString());
-
-                Creditcard creditcard = null;
-                creditcard = new Creditcard(ccId, ccName, ccNumber, ccExpiry, customerId);
-                Executors.newSingleThreadExecutor().execute(new PostCreditcard(creditcard));
-            }
-        });
+            btnDelete.setEnabled(true);
+        }else{
+            btnDelete.setEnabled(false);
+        }
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Executors.newSingleThreadExecutor().execute(new DeleteCreditcard(listViewCreditcard.getCreditCardId()));
+                DeleteCreditcard(creditCards.getCreditCardId());
+               // Executors.newSingleThreadExecutor().execute(new DeleteCreditcard(listViewCreditcard.getCreditCardId()));
             }
         });
-    }
 
-    private class GetCredictcard implements Runnable {
-        private int customerId;
-        public GetCredictcard(int customerId) { this.customerId = customerId; }
-
-        @Override
-        public void run() {
-            StringBuffer buffer = new StringBuffer();
-            String url = "192.168.1.89:8080/workshop7-REST-CreditCard-1.0-SNAPSHOT/api/creditcard/getcreditcards/"+customerId;
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    VolleyLog.wtf(response, "utf-8");
-
-                    //convert JSON data from response string into an Agent
-                    JSONObject creditcard = null;
-                    try {
-                        creditcard = new JSONObject(response);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    //update ListView with the adapter of Credit card
-                    final JSONObject finalCreditcard = creditcard;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                etCCid.setText(finalCreditcard.getInt("CCId") + "");
-                                etCCName.setText(finalCreditcard.getString("CCName"));
-                                etCCNumber.setText(finalCreditcard.getString("CCNumber"));
-                                etCCExpiry.setText(finalCreditcard.getString("CCExpiry"));
-                                etCustomerId.setText(finalCreditcard.getInt("customerId") + "");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.wtf(error.getMessage(), "utf-8");
-                }
-            });
-            requestQueue.add(stringRequest);
-        }
     }
 
 
+    private void DeleteCreditcard(int cCId) {
+
+        // Make a network request to fetch package data
+        String url = getString(R.string.hostname)+"/api/creditcard/deletecredircard/"+cCId;
+        JsonArrayRequest pkgProductRequest = new JsonArrayRequest(
+                Request.Method.DELETE, url, null,
+                response -> {
+                    System.out.println(response.toString());
+
+                    Intent creditIntent = new Intent(this, CreditCardActivity.class);
+
+                    startActivity(creditIntent);
+                },
+                error -> {
+                    // Handle the error
+                    Toast.makeText(
+                            this,
+                            "Error Making Request",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    Log.d("travelexperts", "request timed out");
+                }
+        );
+        requestQueue.add(pkgProductRequest);
+    }
+/*
     private class PostCreditcard implements Runnable {
 
         private Creditcard creditcard;
@@ -175,36 +156,6 @@ public class CreditcardDetailActivity extends AppCompatActivity {
 
             requestQueue.add(jsonObjectRequest);
         }
-    }
+    }*/
 
-    private class DeleteCreditcard implements Runnable {
-        private int CCId;
-        public DeleteCreditcard(int creditCardId) {this.CCId = creditCardId; }
-
-        @Override
-        public void run() {
-            StringBuffer buffer = new StringBuffer();
-            String url = "192.168.1.89:8080/workshop-7-1.0-SNAPSHOT/api/creditcard/deletecredircard"+CCId;
-            StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(final String response) {
-                    VolleyLog.wtf(response, "utf-8");
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.wtf(error.getMessage(), "utf-8");
-                }
-            });
-
-            requestQueue.add(stringRequest);
-        }
-    }
 }

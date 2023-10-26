@@ -15,24 +15,40 @@
         android:theme="@style/Theme.OOSD2023PROJECT_ANDROID"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".AuthRequestTest"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+        />
         <activity
             android:name=".CreditCardActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            />
         <activity
             android:name=".PackageActivity"
             android:exported="false" />
         <activity
             android:name=".CustomerPageActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            />
         <activity
             android:name=".RegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            />
+        <activity
+            android:name=".CreditcardDetailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

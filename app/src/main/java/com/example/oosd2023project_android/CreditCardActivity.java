@@ -15,17 +15,23 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 public class CreditCardActivity extends AppCompatActivity {
 
-    EditText etCustomerId,etCreditId,etCardType,etExpiryDate,etCardNumber;
+    EditText etCreditCustomerId,etCreditId,etCardType,etExpiryDate,etCardNumber;
     ListView lvCreditCards;
     Button btnSaveCard;
 
@@ -35,7 +41,7 @@ public class CreditCardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credit_card);
-        etCustomerId = findViewById(R.id.etCustomerId);
+        etCreditCustomerId = findViewById(R.id.etCreditCustomerId);
         etCreditId = findViewById(R.id.etCreditId);
         etCardType = findViewById(R.id.etCardType);
         etExpiryDate = findViewById(R.id.etExpiryDate);
@@ -43,10 +49,54 @@ public class CreditCardActivity extends AppCompatActivity {
         lvCreditCards = findViewById(R.id.lvCreditCards);
         btnSaveCard = findViewById(R.id.btnSaveCard);
         requestQueue = Volley.newRequestQueue(this);
-        Intent i = getIntent();
-        String customerId = i.getStringExtra("custId");
-        System.out.println(customerId);
-        getAllCreditCards(105);
+
+
+        Intent intent = getIntent();
+        String token = intent.getStringExtra("token");
+        //this fetches customer data through an API request
+        AuthorizedJsonRequest request = new AuthorizedJsonRequest(
+                Request.Method.GET,
+                token,
+                getString(R.string.hostname) + "/api/customers/my-id",
+                null,
+                response -> {
+                    Log.d("JSON Response", response.toString());
+                    try {
+                        int custID = response.getInt("customerId");
+                        getAllCreditCards(custID);
+                        etCreditCustomerId.setText(custID+ "");
+                        etCreditId.setText("0");
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                error -> {
+                    // Handle the error
+                    Toast.makeText(
+                            this,
+                            "Error Making Request",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                });
+
+        requestQueue.add(request);
+
+        btnSaveCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int ccId = Integer.parseInt(etCreditId.getText().toString());
+                String ccName = etCardType.getText().toString();
+                String ccNumber = etCardNumber.getText().toString();
+                String ccExpiry = etExpiryDate.getText().toString();
+                int customerId = Integer.parseInt(etCreditCustomerId.getText().toString());
+
+                CreditCards creditcard = null;
+                creditcard = new CreditCards(ccId, ccName, ccNumber, ccExpiry, customerId);
+                postCreditcard(creditcard,token);
+            }
+        });
+
     }
 
     private void getAllCreditCards(int CustId) {
@@ -60,13 +110,13 @@ public class CreditCardActivity extends AppCompatActivity {
                 Request.Method.GET, url, null,
                 response -> {
                     try {
-                        System.out.println(response);
+
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject creditCardData = response.getJSONObject(i);
-                            System.out.println(creditCardData);
+
 
                             CreditCards cardlist = new CreditCards(creditCardData.getInt("cCid"),creditCardData.getString("cCName"),
-                                    creditCardData.getInt("cCid"),creditCardData.getString("cCExpiry"),
+                                    creditCardData.getString("cCNumber"),creditCardData.getString("cCExpiry"),
                                     creditCardData.getInt("customerId")
                                     );
                             cardDetails.add(cardlist);
@@ -89,9 +139,109 @@ public class CreditCardActivity extends AppCompatActivity {
         lvCreditCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent creditIntent = new Intent(getApplicationContext(), CreditcardDetailActivity.class);
+                creditIntent.putExtra("CustId", CustId);
+                creditIntent.putExtra("CreditCards", (Serializable) adapter.getItem(position));
+                creditIntent.putExtra("mode","edit");
+                startActivity(creditIntent);
             }
         });
         requestQueue.add(creditCardRequest);
     }
+
+    private void postCreditcard(CreditCards creditcard,String token) {
+        // Define the URL for the POST request
+        String url = getString(R.string.hostname) + "/api/creditcard/postcreditcard1";
+
+        // Create a JSON object to hold the credit card data
+        JSONObject creditCardJson = new JSONObject();
+        try {
+            creditCardJson.put("CCId", creditcard.getCreditCardId());
+            creditCardJson.put("CCName", creditcard.getcCName());
+            creditCardJson.put("CCNumber", creditcard.getcCNumber());
+            creditCardJson.put("CCExpiry", creditcard.getcExpiry());
+            creditCardJson.put("customerId", creditcard.getCustomerId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // Handle the JSON creation error here
+            return;
+        }
+        System.out.println("response is :"+ creditCardJson);
+
+
+        AuthorizedJsonRequest request = new AuthorizedJsonRequest(
+                Request.Method.POST,
+                token, //this is the stored token
+                url,
+                creditCardJson,
+                response -> {
+                    try {
+                        Log.d("JSON Response", response.toString());
+
+                        Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                },
+                error -> {
+                    Toast.makeText(getApplicationContext(), "Eror", Toast.LENGTH_LONG).show();
+                });
+
+        requestQueue.add(request);
+
+
+    }
+
+/*
+    private class PostCreditcard implements Runnable {
+
+        private CreditCards creditcard;
+        public PostCreditcard(CreditCards creditcard) {this.creditcard = creditcard;}
+
+        @Override
+        public void run() {
+            String url = getString(R.string.hostname)+"/api/creditcard/postcreditcard";
+            JSONObject obj = new JSONObject();
+            System.out.println(obj.toString());
+            try {
+                obj.put("CCId",creditcard.getCreditCardId()+"");
+                obj.put("CCName", creditcard.getcCName());
+                obj.put("CCNumber",creditcard.getcCNumber());
+                obj.put("CCExpiry",creditcard.getcExpiry());
+                obj.put("customerId",creditcard.getCustomerId());
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, obj,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(final JSONObject response) {
+                            Log.d("alice", "response=" + response);
+                            VolleyLog.wtf(response.toString(), "utf-8");
+
+                            //display result message
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("alice", "error=" + error);
+                            VolleyLog.wtf(error.getMessage(), "utf-8");
+                        }
+                    });
+
+            requestQueue.add(jsonObjectRequest);
+        }
+    }*/
 }

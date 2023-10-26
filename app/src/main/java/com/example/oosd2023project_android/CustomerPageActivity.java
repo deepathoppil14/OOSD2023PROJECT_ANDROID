@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 //import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -211,7 +212,7 @@ public class CustomerPageActivity extends AppCompatActivity {
     }
 
 //updates customer data through RESTful service using Gson
-   /* private void updateCustomerData(Customer updatedCustomer) {
+    private void updateCustomerData(Customer updatedCustomer) {
         Gson gson = new Gson();
         String customerJson = gson.toJson(updatedCustomer);
 
@@ -241,5 +242,5 @@ public class CustomerPageActivity extends AppCompatActivity {
         };
 
         queue.add(request);
-    }*/
+    }
 }
