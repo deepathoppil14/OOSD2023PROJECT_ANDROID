@@ -44,7 +44,7 @@ public class PackageActivity extends AppCompatActivity {
         // Set the adapter to your ListView
         lvPackages.setAdapter(adapter);
         // Make a network request to fetch package data
-        String url = getString(R.string.hostname) +"/api/package/getallpackages";
+        String url =getString(R.string.hostname) +"/api/package/getallpackages";
         JsonArrayRequest packageRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
                 response -> {

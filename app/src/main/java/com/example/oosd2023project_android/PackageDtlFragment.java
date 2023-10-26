@@ -75,7 +75,7 @@ public class PackageDtlFragment extends Fragment {
 
 
         // Make a network request to fetch package data
-        String url = getString(R.string.hostname) +"/api/package/getallproducts/"+packageId;
+        String url =getString(R.string.hostname)+"/api/package/getallproducts/"+packageId;
         JsonArrayRequest pkgProductRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
                 response -> {

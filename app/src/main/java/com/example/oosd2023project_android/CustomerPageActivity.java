@@ -18,7 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +73,7 @@ public class CustomerPageActivity extends AppCompatActivity {
                 updatedCustomer.setCustBusPhone(etCustBusPhone.getText().toString());
 
                 //sends edited customer data to RESTful service
-                updateCustomerData(updatedCustomer);
+               // updateCustomerData(updatedCustomer);
             }
         });
 
@@ -152,7 +152,9 @@ public class CustomerPageActivity extends AppCompatActivity {
         }
         else if (item.getItemId() == R.id.miPayment)
         {
-            startActivity(new Intent(this, PackageActivity.class));
+            Intent creditIntent = new Intent(this, CreditCardActivity.class);
+            creditIntent.putExtra("token", token);
+            startActivity(creditIntent);
         } else
         {
             Toast.makeText(this, "That item is not implemented", Toast.LENGTH_LONG).show();
@@ -209,7 +211,7 @@ public class CustomerPageActivity extends AppCompatActivity {
     }
 
 //updates customer data through RESTful service using Gson
-    private void updateCustomerData(Customer updatedCustomer) {
+   /* private void updateCustomerData(Customer updatedCustomer) {
         Gson gson = new Gson();
         String customerJson = gson.toJson(updatedCustomer);
 
@@ -239,5 +241,5 @@ public class CustomerPageActivity extends AppCompatActivity {
         };
 
         queue.add(request);
-    }
+    }*/
 }
