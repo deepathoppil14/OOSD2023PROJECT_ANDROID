@@ -237,41 +237,21 @@ public class RegisterActivity extends AppCompatActivity {
 
                         try {
                             resJson = new JSONObject(resDataString);
-                            // error_type: validation, username conflict, etc...
+                            // error_type: validation_failed
                             String errorType = resJson.getString("error_type");
 
-                            if (errorType.equals("validation_errors")) {
+                            if (errorType.equals("validation_failed")) {
                                 // There was a validation error, show the user only the first error
                                 // as a toast
-                                String validationErrorString = resJson.getString("validation_errors");
-                                JSONArray validationErrors = new JSONArray(validationErrorString);
-                                String firstError = validationErrors.getString(0);
-                                String errorField = null;
-                                if (firstError.equals("custFirstName")) { errorField = "First Name"; }
-                                else if (firstError.equals("custLastName")) { errorField = "Last Name"; }
-                                else if (firstError.equals("custAddress")) { errorField = "Street Address"; }
-                                else if (firstError.equals("custCity")) { errorField = "City"; }
-                                else if (firstError.equals("custProv")) { errorField = "Province"; }
-                                else if (firstError.equals("custCountry")) { errorField = "Country"; }
-                                else if (firstError.equals("custPostal")) { errorField = "Postal Code"; }
-                                else if (firstError.equals("custHomePhone")) { errorField = "Home Phone"; }
-                                else if (firstError.equals("custBusPhone")) { errorField = "Business Phone"; }
-                                else if (firstError.equals("custEmail")) { errorField = "Email Address"; }
-                                else if (firstError.equals("custUsername")) { errorField = "Username"; }
-                                else if (firstError.equals("custPassword")) { errorField = "Password"; }
-
-                                if (errorField != null)
-                                    Toast.makeText(this, "Invalid " + errorField, Toast.LENGTH_LONG).show();
-                                else // error name unrecognized (an error of the error really)
-                                    Toast.makeText(this, "Unknown Error", Toast.LENGTH_LONG).show();
-                            }
-                            else if (errorType.equals("username_taken")) {
-                                // username conflict
-                                Toast.makeText(this, "Username is Already Taken", Toast.LENGTH_LONG).show();
+                                String validationErrorsString = resJson.getString("validation_errors");
+                                JSONObject validationErrors = new JSONObject(validationErrorsString);
+                                String firstErrorKey = validationErrors.keys().next();
+                                String firstError = validationErrors.getString(firstErrorKey);
+                                Toast.makeText(this, firstError, Toast.LENGTH_LONG).show();
                             }
                         }
                         catch (JSONException e) {
-                            throw new RuntimeException(e);
+                            Toast.makeText(this, "Unknown Error", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
