@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,13 +43,16 @@ public class CustomerPageActivity extends AppCompatActivity {
     private EditText etCustAddress;
     private EditText etCustBusPhone;
 
+    private String custUsername;
+    private String custPassword;
+
     private String token; //adds a variable to store the token
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_page);
-        Toast.makeText(this, R.id.miPackages + "", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, R.id.miPackages + "", Toast.LENGTH_LONG).show();
 
         Toolbar tbTools = findViewById(R.id.tbTools);
         setSupportActionBar(tbTools);
@@ -74,7 +78,7 @@ public class CustomerPageActivity extends AppCompatActivity {
                 updatedCustomer.setCustBusPhone(etCustBusPhone.getText().toString());
 
                 //sends edited customer data to RESTful service
-               // updateCustomerData(updatedCustomer);
+                updateCustomerData(updatedCustomer);
             }
         });
 
@@ -118,6 +122,8 @@ public class CustomerPageActivity extends AppCompatActivity {
                         String custHomePhone = response.getString("custHomePhone");
                         String custAddress = response.getString("custAddress");
                         String custBusPhone = response.getString("custBusPhone");
+                        custUsername = response.getString("custUsername");
+                        custPassword = response.getString("custPassword");
                         //this sends those values into the UI
                         etCustFirstName.setText(custFirstName);
                         etCustLastName.setText(custLastName);
@@ -215,11 +221,14 @@ public class CustomerPageActivity extends AppCompatActivity {
 //updates customer data through RESTful service using Gson
     private void updateCustomerData(Customer updatedCustomer) {
         Gson gson = new Gson();
+        updatedCustomer.setCustUsername(custUsername);
+        updatedCustomer.setCustPassword(custPassword);
         String customerJson = gson.toJson(updatedCustomer);
 
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = getString(R.string.hostname) + "/api/customers/update";
 
+        /*
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 response -> {
                     Toast.makeText(this, "Customer data updated successfully", Toast.LENGTH_SHORT).show();
@@ -241,6 +250,28 @@ public class CustomerPageActivity extends AppCompatActivity {
                 return headers;
             }
         };
+         */
+        JSONObject jsonCustomer;
+        try {
+            jsonCustomer = new JSONObject(customerJson);
+        }
+        catch (JSONException e) {
+            Toast.makeText(this, "JSON Error updating customer data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AuthorizedJsonRequest request = new AuthorizedJsonRequest(
+                Request.Method.PUT,
+                token,
+                url,
+                jsonCustomer,
+                response -> {
+                    Toast.makeText(this, "Customer data updated successfully", Toast.LENGTH_SHORT).show();
+                },
+                error -> {
+                    Log.e("travelexperts", gson.toJson(new String(error.networkResponse.data, StandardCharsets.UTF_8).toString()));
+                    Toast.makeText(this, "Error updating customer data", Toast.LENGTH_SHORT).show();
+                });
 
         queue.add(request);
     }
