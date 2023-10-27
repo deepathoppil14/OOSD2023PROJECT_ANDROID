@@ -163,7 +163,7 @@ public class CreditCardActivity extends AppCompatActivity {
 
     private void postCreditcard(CreditCards creditcard,String token) {
         // Define the URL for the POST request
-        String url = getString(R.string.hostname) + "/api/creditcard/postcreditcard";
+        String url = getString(R.string.hostname) + "/api/creditcard/putcreditcard";
 
         // Create a JSON object to hold the credit card data
         JSONObject creditCardJson = new JSONObject();
@@ -182,7 +182,7 @@ public class CreditCardActivity extends AppCompatActivity {
 
 
         AuthorizedJsonRequest request = new AuthorizedJsonRequest(
-                Request.Method.POST,
+                Request.Method.PUT,
                 token, //this is the stored token
                 url,
                 creditCardJson,
@@ -198,7 +198,7 @@ public class CreditCardActivity extends AppCompatActivity {
                 },
                 error -> {
                     Log.e("travelexperts", error.toString());
-                    Toast.makeText(getApplicationContext(), "Erorr", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
                 });
 
         requestQueue.add(request);
