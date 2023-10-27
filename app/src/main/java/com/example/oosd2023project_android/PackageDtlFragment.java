@@ -101,7 +101,6 @@ public class PackageDtlFragment extends Fragment {
                             "Error Making Request",
                             Toast.LENGTH_SHORT
                     ).show();
-                    Log.d("travelexperts", "request timed out");
                 }
         );
         requestQueue.add(pkgProductRequest);
