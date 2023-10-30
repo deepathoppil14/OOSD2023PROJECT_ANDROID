@@ -6,6 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This fragment contains inputs for entering customer addresses, as
+ * well as functionality for updating those values in a customer object
+ * (meant to be used as part of the registration process)
+ */
 public class AddressFragment extends RegistrationFragment {
 
     private EditText etCustAddress;
@@ -29,6 +36,7 @@ public class AddressFragment extends RegistrationFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_address, container, false);
 
+        // get the edit-texts
         etCustAddress = view.findViewById(R.id.etCustAddress);
         etCustCity = view.findViewById(R.id.etCustCity);
         etCustPostal = view.findViewById(R.id.etCustPostal);
@@ -38,6 +46,10 @@ public class AddressFragment extends RegistrationFragment {
         return view;
     }
 
+    /*
+     * Pull the address related values from a customer object into
+     * the text fields of the fragment
+     */
     @Override
     public void fromCustomer(Customer customer) {
         String address = customer.getCustAddress();
@@ -59,6 +71,9 @@ public class AddressFragment extends RegistrationFragment {
         etCustCountry.setText(country);
     }
 
+    /*
+     * Put the values from the text fields into a customer object
+     */
     @Override
     public Customer intoCustomer(Customer customer) {
         customer.setCustAddress(etCustAddress.getText().toString());

@@ -24,8 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
- * This activity is responsible for guiding the user through registering a new customer
- * account.
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This activity is responsible for collecting customer information and attempting
+ * to register a new account. To do so, it cycles through a series of fragments and
+ * attempts to make a request with the collected data. If the request is successful,
+ * then the user is redirected to the LoginActivity; otherwise, validation messages
+ * are displayed in order to correct the entered data.
  */
 public class RegisterActivity extends AppCompatActivity {
 
@@ -193,6 +198,7 @@ public class RegisterActivity extends AppCompatActivity {
             jsonObject.put("custPassword", customer.getCustPassword());
         }
         catch (JSONException ex) {
+            // error putting the customer info into a json object
             Toast.makeText(this, "Error Processing Registration Information", Toast.LENGTH_LONG).show();
             Log.e("travelexperts", "JSON Error: " + ex.getMessage());
             return;
@@ -213,6 +219,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG)
                             .show();
 
+                    // go to login
                     Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                 },
@@ -251,6 +258,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
                         catch (JSONException e) {
+                            // unknown error
                             Toast.makeText(this, "Unknown Error", Toast.LENGTH_LONG).show();
                         }
                     }

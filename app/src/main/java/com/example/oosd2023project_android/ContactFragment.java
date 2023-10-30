@@ -7,6 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This fragment is used as part of the registration process for
+ * collecting the user's phone numbers and email address.
+ */
 public class ContactFragment extends RegistrationFragment {
 
     private EditText etCustHomePhone;
@@ -35,6 +41,9 @@ public class ContactFragment extends RegistrationFragment {
         return view;
     }
 
+    /*
+     * Pulls corresponding values from customer object into text fields
+     */
     @Override
     public void fromCustomer(Customer customer) {
         String email = customer.getCustEmail();
@@ -50,6 +59,9 @@ public class ContactFragment extends RegistrationFragment {
         etCustEmail.setText(email);
     }
 
+    /*
+     * Inserts values from text fields into customer object
+     */
     @Override
     public Customer intoCustomer(Customer customer) {
         customer.setCustHomePhone(etCustHomePhone.getText().toString());

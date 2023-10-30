@@ -11,6 +11,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This was just to demonstrate the functionality of the
+ * AuthorizedJsonRequest class, however it wasnt deleted
+ * just in case that would break the project before submission
+ */
 public class AuthRequestTest extends AppCompatActivity {
 
     @Override

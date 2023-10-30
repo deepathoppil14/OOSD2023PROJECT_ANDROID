@@ -7,6 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This fragment collects username/password information from the
+ * user, either for logging-in or creating a new account (therefore
+ * it has additional methods just for retrieving the username password
+ * values, unlike other RegistrationFragments)
+ */
 public class LoginFragment extends RegistrationFragment {
 
     private EditText etCustUsername;
@@ -33,16 +41,19 @@ public class LoginFragment extends RegistrationFragment {
         return view;
     }
 
+    // Gets the username
     public String getCustUsername() {
         EditText etCustUsername = getView().findViewById(R.id.etCustUsername);
         return etCustUsername.getText().toString();
     }
 
+    // gets the password
     public String getCustPassword() {
         EditText etCustPassword = getView().findViewById(R.id.etCustPassword);
         return etCustPassword.getText().toString();
     }
 
+    // Takes custUsername/custPassword and updates the values of the text fields
     @Override
     public void fromCustomer(Customer customer) {
         String username = customer.getCustUsername();
@@ -55,6 +66,7 @@ public class LoginFragment extends RegistrationFragment {
         etCustPassword.setText(password);
     }
 
+    // takes the textfields and updates custUsername/custPassword
     @Override
     public Customer intoCustomer(Customer customer) {
         customer.setCustUsername(etCustUsername.getText().toString());

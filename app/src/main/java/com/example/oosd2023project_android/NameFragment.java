@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 /*
- * This is a fragment of the registration process, responsible for
- * collecting the user's first and last name
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This fragment collects a new customer's first and last names as
+ * part of the registration process
  */
 public class NameFragment extends RegistrationFragment {
 

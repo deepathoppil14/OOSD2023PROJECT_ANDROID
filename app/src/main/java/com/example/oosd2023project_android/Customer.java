@@ -1,5 +1,12 @@
 package com.example.oosd2023project_android;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This class represents a customer in the travelexperts database. It
+ * is used to incrementally gather customer data during the registration
+ * process before submission to the registration endpoint
+ */
 public class Customer {
     private Integer customerId;
     private String custFirstName;

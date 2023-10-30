@@ -11,10 +11,19 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This is an extension of the Volley JsonObjectRequest to enable
+ * easily adding a token value to the HTTP Authorization header.
+ */
 public class AuthorizedJsonRequest extends JsonObjectRequest {
 
+    // the token value
     private String token;
 
+    // The same as the JsonObjectRequest constructor, however
+    // it accepts token as a parameter
     public AuthorizedJsonRequest(
             int method,
             String token,
@@ -26,6 +35,8 @@ public class AuthorizedJsonRequest extends JsonObjectRequest {
         this.token = token;
     }
 
+    // Returns a map containing the appropriate authorization header
+    // for calls to the workshop 7 secured endpoints
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<>();

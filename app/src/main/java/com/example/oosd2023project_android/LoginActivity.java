@@ -15,8 +15,18 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This is the main activity of the application. It requests that a user
+ * either input their login details, or register as a new customer.
+ *
+ * *** The hostname of the REST service is stored in strings.xml for easy
+ * changes between computers
+ */
 public class LoginActivity extends AppCompatActivity {
 
+    // Volley request queue
     RequestQueue requestQueue;
 
     @Override
@@ -24,11 +34,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // The LoginFragment where a customer enters their username/password
         LoginFragment fragment =
                 (LoginFragment) getSupportFragmentManager().findFragmentById(R.id.loginFragment);
 
         requestQueue = Volley.newRequestQueue(this);
 
+        // On-click register, switch to a RegisterActivity
         findViewById(R.id.btnRegister).setOnClickListener(view -> {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
@@ -55,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
             catch (JSONException e) {
+                // JSONException creating the object, should not occur
                 Toast.makeText(
                         LoginActivity.this,
                         "Error parsing username/password",
@@ -63,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // Create a JSON request (sends/recieves JSON)
+            // Create a JSON request (sends/receives JSON)
             JsonObjectRequest request = new JsonObjectRequest(
                     StringRequest.Method.POST,
                     getString(R.string.hostname) + "/api/auth/login",
@@ -85,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                                     .show();*/
                         }
                         catch (JSONException e) {
+                            // Could not pull the token from the response
                             Toast.makeText(
                                     LoginActivity.this,
                                     "Error parsing token",
