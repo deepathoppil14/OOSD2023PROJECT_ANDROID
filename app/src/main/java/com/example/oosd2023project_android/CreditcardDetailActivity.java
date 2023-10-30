@@ -48,9 +48,9 @@ public class CreditcardDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creditcard_detail);
-
+        // Initialize the Volley request queue
         requestQueue = Volley.newRequestQueue(this);
-
+        // Extract the authorization token from the intent
         token = getIntent().getStringExtra("token");
 
 
@@ -62,9 +62,11 @@ public class CreditcardDetailActivity extends AppCompatActivity {
         etCustomerId = findViewById(R.id.etCustomerId);
 
         Intent intent = getIntent();
+        // Retrieve the "mode" value
         String  mode = intent.getStringExtra("mode");
         if(mode.equals("edit")){
             creditCards = (CreditCards) intent.getSerializableExtra("CreditCards"); //serializable so typecast to Product
+            // Populate text fields with credit card details
             etCCid.setText(creditCards.getCreditCardId()+"");
             etCCName.setText(creditCards.getcCName());
             etCCNumber.setText(creditCards.getcCNumber());
@@ -75,7 +77,7 @@ public class CreditcardDetailActivity extends AppCompatActivity {
         }else{
             btnDelete.setEnabled(false);
         }
-
+        // OnClickListener with a "Delete" button.
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +91,7 @@ public class CreditcardDetailActivity extends AppCompatActivity {
 
     private void DeleteCreditcard(int cCId) {
 
-        // Make a network request to fetch package data
+        // Make a network request to fetch credit card data
         String url = getString(R.string.hostname)+"/api/creditcard/deletecreditcard/"+cCId;
         AuthorizedJsonRequest pkgProductRequest = new AuthorizedJsonRequest(
                 Request.Method.DELETE,

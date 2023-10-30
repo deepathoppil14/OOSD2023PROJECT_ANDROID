@@ -87,20 +87,25 @@ public class CreditCardActivity extends AppCompatActivity {
         btnSaveCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Extract data from input fields and convert it to the appropriate data types
                 int ccId = Integer.parseInt(etCreditId.getText().toString());
                 String ccName = etCardType.getText().toString();
                 String ccNumber = etCardNumber.getText().toString();
                 String ccExpiry = etExpiryDate.getText().toString();
                 int customerId = Integer.parseInt(etCreditCustomerId.getText().toString());
 
+                // Create a CreditCards object with the extracted data
                 CreditCards creditcard = null;
                 creditcard = new CreditCards(ccId, ccName, ccNumber, ccExpiry, customerId);
+
+                // Call the postCreditcard function with the CreditCards object and the 'token' parameter
                 postCreditcard(creditcard,token);
             }
         });
 
     }
 
+    // get credit card information by customer ID
     private void getAllCreditCards(int CustId) {
         ArrayList<CreditCards> cardDetails = new ArrayList<>();
         ArrayAdapter<CreditCards> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cardDetails);
@@ -108,6 +113,7 @@ public class CreditCardActivity extends AppCompatActivity {
         lvCreditCards.setAdapter(adapter);
 
         String url =getString(R.string.hostname)+"/api/creditcard/getcreditcards";
+        // Create an AuthorizedJsonRequest to send a GET request to the URL
         AuthorizedJsonRequest creditCardRequest = new AuthorizedJsonRequest(
                 Request.Method.GET,
                 getIntent().getStringExtra("token"),
@@ -115,13 +121,16 @@ public class CreditCardActivity extends AppCompatActivity {
                 null,
                 response -> {
                     try {
+                        // Extract the credit card data from the response JSON
                         String cardListString = response.getString("creditcards");
                         JSONArray cardList = new JSONArray(cardListString);
 //                        JSONArray cardList = response.getJSONArray("creditcards");
                         Log.d("travelexperts", "CARD LIST: " + cardList.toString());
-//
+
+                        // Process each credit card object in the JSON array
                         for (int i = 0; i < cardList.length(); i++) {
                             JSONObject cardJson = cardList.getJSONObject(i);
+                            // Create a CreditCards object from the JSON data
                             CreditCards card = new CreditCards(
                                     cardJson.getInt("creditCardId"),
                                     cardJson.getString("ccName"),
@@ -129,8 +138,10 @@ public class CreditCardActivity extends AppCompatActivity {
                                     cardJson.getString("ccExpiry"),
                                     cardJson.getInt("customerId"));
 
+                            // Add the CreditCards object to a list
                             cardDetails.add(card);
                         }
+                        // Notify an adapter that the data has changed
                         adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -161,6 +172,7 @@ public class CreditCardActivity extends AppCompatActivity {
         requestQueue.add(creditCardRequest);
     }
 
+//    update credit card data
     private void postCreditcard(CreditCards creditcard,String token) {
         // Define the URL for the POST request
         String url = getString(R.string.hostname) + "/api/creditcard/putcreditcard";
