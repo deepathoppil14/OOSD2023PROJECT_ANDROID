@@ -1,6 +1,7 @@
 package com.example.oosd2023project_android;
 
 public class Package {
+    /* member variables to store package information*/
     private int packageId;
     private String pkgName;
     private String pkgStartDate;
@@ -9,6 +10,7 @@ public class Package {
     private String pkgBasePrice;
     private String pkgAgencyCommission;
 
+    /*constructor to initialize package*/
     public Package(int packageId, String pkgName, String pkgStartDate, String pkgEndDate, String pkgDesc, String pkgBasePrice, String pkgAgencyCommission) {
         this.packageId = packageId;
         this.pkgName = pkgName;
@@ -19,6 +21,7 @@ public class Package {
         this.pkgAgencyCommission = pkgAgencyCommission;
     }
 
+    /*getter and setter for the member variables*/
     public int getPackageId() {
         return packageId;
     }
@@ -75,6 +78,7 @@ public class Package {
         this.pkgAgencyCommission = pkgAgencyCommission;
     }
 
+    /*to display the package-specific  information*/
     @Override
     public String toString() {
         return packageId + ". "+pkgName +" ,$" + pkgBasePrice ;

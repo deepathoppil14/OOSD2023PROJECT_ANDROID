@@ -1,5 +1,9 @@
 package com.example.oosd2023project_android;
-
+/**
+ * 'activity_package.xml' Controller Class
+ *  Created by : Deepa Thoppil
+ *  Dated : 15-10-2023
+ */
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -33,6 +37,7 @@ public class PackageActivity extends AppCompatActivity {
         // Initialize ListView
         lvPackages = findViewById(R.id.lvPackages);
         requestQueue = Volley.newRequestQueue(this);
+        // Call the method to fetch and display packages
         getAllPackages();
 
     }
@@ -41,7 +46,7 @@ public class PackageActivity extends AppCompatActivity {
         ArrayList<Package> packageNames = new ArrayList<>();
         // Create an ArrayAdapter with the simple_list_item_1 layout
         ArrayAdapter<Package> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, packageNames);
-        // Set the adapter to your ListView
+        // Set the adapter to the ListView
         lvPackages.setAdapter(adapter);
         // Make a network request to fetch package data
         String url =getString(R.string.hostname) +"/api/package/getallpackages";
@@ -52,6 +57,7 @@ public class PackageActivity extends AppCompatActivity {
                         System.out.println(response);
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject packageData = response.getJSONObject(i);
+                            // Extract package data from the JSON response
                             Integer id = packageData.getInt("id");
                             String pkgName = packageData.getString("pkgName");
                             String startDt = packageData.getString("pkgStartDate");
@@ -59,6 +65,7 @@ public class PackageActivity extends AppCompatActivity {
                             String pkgDesc = packageData.getString("pkgDesc");
                             String pkgBasePrice = packageData.getString("pkgBasePrice");
                             String pkgAgencyCommission = packageData.getString("pkgAgencyCommission");
+                            // Create a Package object and add it to the list
                             Package packagelist = new Package(id,pkgName,startDt,endDt,pkgDesc,pkgBasePrice,pkgAgencyCommission);
                             packageNames.add(packagelist);
 
@@ -78,18 +85,16 @@ public class PackageActivity extends AppCompatActivity {
                     Log.d("travelexperts", "request timed out");
                 }
         );
+        // Set an item click listener for the ListView
         lvPackages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Retrieve the selected package and display its details
                 PackageDtlFragment packageDtlFragment = (PackageDtlFragment) getSupportFragmentManager().findFragmentById(R.id.fragPackageDetail);
                 packageDtlFragment.displayPackageDtl(adapter.getItem(position));
             }
         });
+        // Add the package request to the request queue
         requestQueue.add(packageRequest);
     }
-
-
-
-
-
 }
