@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
  * This class represents an abstract fragment used as part of the registration
  * process. It includes methods to pull the relevant information out of the fragment
  * and into a customer object, or vice-versa.
+ * Author : Grayson
  */
 public abstract class RegistrationFragment extends Fragment {
     // put the customer data into the fragment's input fields

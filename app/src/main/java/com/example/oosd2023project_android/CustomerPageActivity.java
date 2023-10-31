@@ -1,5 +1,5 @@
 package com.example.oosd2023project_android;
-
+//Author of this section: Osaid Masood
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;

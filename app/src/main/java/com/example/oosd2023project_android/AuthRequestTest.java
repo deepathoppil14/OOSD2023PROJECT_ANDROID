@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley;
  * This was just to demonstrate the functionality of the
  * AuthorizedJsonRequest class, however it wasnt deleted
  * just in case that would break the project before submission
+ * Author: Grayson
  */
 public class AuthRequestTest extends AppCompatActivity {
 

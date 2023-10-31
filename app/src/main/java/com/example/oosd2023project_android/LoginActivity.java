@@ -23,6 +23,7 @@ import org.json.JSONObject;
  *
  * *** The hostname of the REST service is stored in strings.xml for easy
  * changes between computers
+ * Author : Grayson
  */
 public class LoginActivity extends AppCompatActivity {
 

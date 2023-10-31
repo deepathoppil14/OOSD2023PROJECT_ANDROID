@@ -14,6 +14,7 @@ import android.widget.EditText;
  * user, either for logging-in or creating a new account (therefore
  * it has additional methods just for retrieving the username password
  * values, unlike other RegistrationFragments)
+ * Author: Grayson
  */
 public class LoginFragment extends RegistrationFragment {
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
  *
  * This fragment collects a new customer's first and last names as
  * part of the registration process
+ * Author: Grayson
  */
 public class NameFragment extends RegistrationFragment {
 

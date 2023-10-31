@@ -12,6 +12,7 @@ import android.widget.EditText;
  * This fragment contains inputs for entering customer addresses, as
  * well as functionality for updating those values in a customer object
  * (meant to be used as part of the registration process)
+ * Author: Grayson
  */
 public class AddressFragment extends RegistrationFragment {
 

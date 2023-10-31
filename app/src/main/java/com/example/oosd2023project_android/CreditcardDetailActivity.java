@@ -1,5 +1,11 @@
 package com.example.oosd2023project_android;
-
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This class is for managing edit and delete of credit card info
+ * Author: Alice
+ * Edited by : Grayson
+ */
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;

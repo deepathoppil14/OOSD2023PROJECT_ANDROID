@@ -1,5 +1,11 @@
 package com.example.oosd2023project_android;
-
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This class represents a  creditcars info of a customer in the travelexperts database. It
+ * is used to incrementally gather creditcard information of customer after logging in
+ * Author: Alice
+ */
 import java.io.Serializable;
 import java.util.Date;
 

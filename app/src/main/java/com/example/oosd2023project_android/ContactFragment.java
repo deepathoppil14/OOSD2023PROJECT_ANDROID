@@ -12,6 +12,7 @@ import android.widget.EditText;
  *
  * This fragment is used as part of the registration process for
  * collecting the user's phone numbers and email address.
+ * Author: Grayson
  */
 public class ContactFragment extends RegistrationFragment {
 

@@ -1,5 +1,11 @@
 package com.example.oosd2023project_android;
-
+/*
+ * OOSD Workshop 8 - Team 2 - 2023
+ *
+ * This class is for managing add and list credit card information of a logged customer
+ * Author: Alice
+ * Edited by : Grayson, Deepa
+ */
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -218,55 +224,4 @@ public class CreditCardActivity extends AppCompatActivity {
 
     }
 
-/*
-    private class PostCreditcard implements Runnable {
-
-        private CreditCards creditcard;
-        public PostCreditcard(CreditCards creditcard) {this.creditcard = creditcard;}
-
-        @Override
-        public void run() {
-            String url = getString(R.string.hostname)+"/api/creditcard/postcreditcard";
-            JSONObject obj = new JSONObject();
-            System.out.println(obj.toString());
-            try {
-                obj.put("CCId",creditcard.getCreditCardId()+"");
-                obj.put("CCName", creditcard.getcCName());
-                obj.put("CCNumber",creditcard.getcCNumber());
-                obj.put("CCExpiry",creditcard.getcExpiry());
-                obj.put("customerId",creditcard.getCustomerId());
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, obj,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(final JSONObject response) {
-                            Log.d("alice", "response=" + response);
-                            VolleyLog.wtf(response.toString(), "utf-8");
-
-                            //display result message
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("alice", "error=" + error);
-                            VolleyLog.wtf(error.getMessage(), "utf-8");
-                        }
-                    });
-
-            requestQueue.add(jsonObjectRequest);
-        }
-    }*/
 }

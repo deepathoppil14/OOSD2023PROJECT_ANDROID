@@ -16,6 +16,7 @@ import java.util.Map;
  *
  * This is an extension of the Volley JsonObjectRequest to enable
  * easily adding a token value to the HTTP Authorization header.
+ * Author: Grayson
  */
 public class AuthorizedJsonRequest extends JsonObjectRequest {
 

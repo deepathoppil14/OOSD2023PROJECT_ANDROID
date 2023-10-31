@@ -31,6 +31,7 @@ import java.util.List;
  * attempts to make a request with the collected data. If the request is successful,
  * then the user is redirected to the LoginActivity; otherwise, validation messages
  * are displayed in order to correct the entered data.
+ * Author : Grayson
  */
 public class RegisterActivity extends AppCompatActivity {
 
