@@ -57,6 +57,9 @@ public class CustomerPageActivity extends AppCompatActivity {
         Toolbar tbTools = findViewById(R.id.tbTools);
         setSupportActionBar(tbTools);
 
+        /****************************************************************************/
+        //Author of this section: Osaid Masood
+
         //this initializes the save button
         Button btnSave = findViewById(R.id.save);
 
@@ -145,6 +148,7 @@ public class CustomerPageActivity extends AppCompatActivity {
 
         queue.add(request);
     }
+    /****************************************************************************************/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mymenu,menu);
@@ -171,6 +175,9 @@ public class CustomerPageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**************************************************************************************/
+    //Author of this section: Osaid Masood
 
     //this method fetches data using the token that was created
     private void fetchCustomerData() {
